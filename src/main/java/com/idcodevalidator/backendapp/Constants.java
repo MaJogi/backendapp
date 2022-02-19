@@ -16,4 +16,12 @@ public class Constants {
         public static String INCORRECT_BIRTH_ORDER = "Incorrect birth order (seventh up to tenth) digits";
         public static String INCORRECT_CONTROL_NUMBER = "Incorrect control number, please check given ID code";
     }
+
+    public static class RegularExpr {
+        public static String ONLY_DIGITS = "[0-9]+";
+        public static String ONLY_ONE_TO_SIX = "[1-6]";
+        public static String BIRTH_MONTH_DIGITS_ONLY = "0[1-9]|1[0-2]";
+        public static String BIRTH_DAY_DIGITS_ONLY = "0?[1-9]|[12][0-9]|3[01]";
+        public static String FIRST_UP_TO_THOUSAND = "^(00[1-9]|0[1-9][0-9]|[1-9][0-9][0-9])$";
+    }
 }

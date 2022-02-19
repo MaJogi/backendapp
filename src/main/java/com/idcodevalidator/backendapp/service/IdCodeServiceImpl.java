@@ -43,19 +43,19 @@ public class IdCodeServiceImpl implements IdCodeService {
         if (idCode.length() != Constants.ID_CODE_LENGTH) {
             validation = createValidation(idCode, true,
                     Constants.ErrorDescription.INCORRECT_CODE_LENGTH);
-        } else if (!idCode.matches("[0-9]+")) {
+        } else if (!idCode.matches(Constants.RegularExpr.ONLY_DIGITS)) {
             validation = createValidation(idCode, true,
                     Constants.ErrorDescription.ONLY_DIGITS_ALLOWED);
-        } else if (!idCode.substring(0, 1).matches("[1-6]")) {
+        } else if (!idCode.substring(0, 1).matches(Constants.RegularExpr.ONLY_ONE_TO_SIX)) {
             validation = createValidation(idCode, true,
                     Constants.ErrorDescription.INCORRECT_GENDER_IDENTIFIER);
-        } else if (!idCode.substring(3, 5).matches("0[1-9]|1[0-2]")) {
+        } else if (!idCode.substring(3, 5).matches(Constants.RegularExpr.BIRTH_MONTH_DIGITS_ONLY)) {
             validation = createValidation(idCode, true,
                     Constants.ErrorDescription.INCORRECT_BIRTH_MONTH);
-        } else if (!idCode.substring(5, 7).matches("0?[1-9]|[12][0-9]|3[01]")) {
+        } else if (!idCode.substring(5, 7).matches(Constants.RegularExpr.BIRTH_DAY_DIGITS_ONLY)) {
             validation = createValidation(idCode, true,
                     Constants.ErrorDescription.INCORRECT_BIRTH_DAY);
-        } else if (!idCode.substring(7, 10).matches("^(00[1-9]|0[1-9][0-9]|[1-9][0-9][0-9])$")) {
+        } else if (!idCode.substring(7, 10).matches(Constants.RegularExpr.FIRST_UP_TO_THOUSAND)) {
             validation = createValidation(idCode,
                     true, Constants.ErrorDescription.INCORRECT_BIRTH_ORDER);
         } else if (!(Integer.parseInt(idCode.substring(10, 11)) == (calculateControlNumber(idCode)))) {
