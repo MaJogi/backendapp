@@ -1,20 +1,98 @@
 package com.idcodevalidator.backendapp.unit.service;
 
+import com.idcodevalidator.backendapp.Constants;
 import com.idcodevalidator.backendapp.service.IdCodeService;
 import com.idcodevalidator.backendapp.unit.UnitTestBase;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS) //fixme
 class IdCodeServiceImplTest extends UnitTestBase {
 
     @Autowired
     IdCodeService service;
 
+    @BeforeAll
+    void init() {
+        assertNotNull(service);
+    }
+
+    // Todo: EE_PROJECT-2: Create random generated values to test right day, month and year.
+
+    @Test
+    void processIdCodeIncorrectIdCodeLength() {
+        List<String> incorrectIds = Arrays.asList("1234567891", "123456789", "123456789012");
+        for (String id : incorrectIds) {
+            assertEquals(Constants.ErrorDescription.INCORRECT_CODE_LENGTH, service.processIdCode(id).getVerdict());
+        }
+    }
+
+    @Test
+    void processIdCodeOnlyDigitsAllowed() {
+        List<String> incorrectIds = Arrays.asList("39805$25211", "$/()b5f8611", "3980522521$");
+        for (String id : incorrectIds) {
+            assertEquals(Constants.ErrorDescription.ONLY_DIGITS_ALLOWED, service.processIdCode(id).getVerdict());
+        }
+    }
+
+    @Test
+    void processIdCodeIncorrectGenderIdentifier() {
+        List<String> incorrectIds = Arrays.asList("79805225211", "89805225211", "99805225211");
+        for (String id : incorrectIds) {
+            assertEquals(Constants.ErrorDescription.INCORRECT_GENDER_IDENTIFIER, service.processIdCode(id).getVerdict());
+        }
+    }
+
+    @Test
+    void processIdCodeIncorrectBirthMonth() {
+        // String example = "398 05 225211";
+        String firstPart = "398";
+        String lastPart = "22521";
+        List<String> correctMonths = new ArrayList<>();
+        List<String> incorrectMonths = new ArrayList<>();
+
+
+        // Creating test data
+        for (int i = 1; i <= 12; i++) {
+            if (i < 10) {
+                correctMonths.add(firstPart + "0" + i + lastPart);
+            } else {
+                correctMonths.add(firstPart + i + lastPart);
+            }
+        }
+        for (int i = 13; i <= 99; i++) {
+            incorrectMonths.add(firstPart + i + lastPart);
+        }
+
+        // Actually testing with previously created test data
+        for (String id : correctMonths) {
+            var controlNumber = service.calculateControlNumber(id);
+            assertEquals(Constants.CORRECT_ID,
+                    service.processIdCode(id + controlNumber)
+                            .getVerdict());
+        }
+        for (String id : incorrectMonths) {
+            var controlNumber = service.calculateControlNumber(id);
+            assertEquals(Constants.ErrorDescription.INCORRECT_BIRTH_MONTH,
+                    service.processIdCode(id + controlNumber)
+                            .getVerdict());
+        }
+    }
+
     @Test
     void processIdCodeCorrectCode() {
-        assertNotNull(service);
+        List<String> correctIds = Arrays.asList("39805225211", "37012222214", "37605030299"); // Fixme: Add more.
+        for (String id : correctIds) {
+            assertEquals(Constants.CORRECT_ID, service.processIdCode(id).getVerdict());
+        }
     }
 
     @Test

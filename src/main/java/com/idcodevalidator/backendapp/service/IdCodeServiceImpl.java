@@ -2,7 +2,6 @@ package com.idcodevalidator.backendapp.service;
 
 import com.idcodevalidator.backendapp.Constants;
 import com.idcodevalidator.backendapp.entity.Validation;
-import com.idcodevalidator.backendapp.exception.*;
 import com.idcodevalidator.backendapp.repository.ValidationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,8 +69,6 @@ public class IdCodeServiceImpl implements IdCodeService {
         return validation;
     }
 
-    // TODO. WRITE TESTS
-
     /**
      * @param idCode
      * @param failed
@@ -96,26 +93,30 @@ public class IdCodeServiceImpl implements IdCodeService {
         repository.save(validation);
     }
 
-    @Override
     public int calculateControlNumber(String idCode) {
         List<Integer> firstStageWeights = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 1);
         List<Integer> secondStageWeights = Arrays.asList(3, 4, 5, 6, 7, 8, 9, 1, 2, 3);
 
+        var idCodeLength = 11;
+
         int sum = 0;
-        for (int i = 0; i < idCode.length() - 1; i++) {
-            sum += Integer.parseInt(String.valueOf(idCode.charAt(i))) * firstStageWeights.get(i); // Fixme: remove duplication
+        for (int i = 0; i < idCodeLength - 1; i++) {
+            sum += Integer.parseInt(Character.toString(idCode.charAt(i))) * firstStageWeights.get(i); // Fixme: remove duplication
         }
 
         int result = sum % 11;
-        // if sum is <10, we found missing number
+        // if sum is < 10, we found missing number
         if (result < 10) {
             LOGGER.debug("First round control number: " + result);
         } else { // doing calculation with secondStageWeights
             sum = 0;
-            for (int i = 0; i < idCode.length() - 1; i++) {
-                sum += (int) idCode.charAt(i) * secondStageWeights.get(i);
+            for (int i = 0; i < idCodeLength - 1; i++) {
+                sum += Integer.parseInt(Character.toString(idCode.charAt(i))) * secondStageWeights.get(i);
             }
             result = sum % 11;
+            if (result == 10) { // last possible value
+                return 0;
+            }
             LOGGER.debug("Second round control number: " + result);
         }
 
