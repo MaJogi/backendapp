@@ -27,7 +27,7 @@ public class ValidationController {
     }
 
     @PostMapping(value = "processIdCode", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<String> onIdSubmit(@RequestBody final ValidationRequest processRequest) {
+    public ResponseEntity<String> onIdSubmit(@RequestBody final ValidationRequest processRequest) throws Exception {
         Validation result = service.processIdCode(processRequest.getIdCode());
         return new ResponseEntity<>(result.getVerdict(), HttpStatus.OK);
     }

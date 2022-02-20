@@ -25,7 +25,7 @@ public class IdCodeServiceImpl implements IdCodeService {
      * @return
      */
     @Override
-    public Validation processIdCode(String idCode) {
+    public Validation processIdCode(String idCode) throws Exception {
 
         /* Of course there is a chance that some day and month pair don't exist. Like days 29-31 in February.
            But I won't overcomplicate solution by trying to convert parts of ID code to date object. In real
@@ -74,7 +74,11 @@ public class IdCodeServiceImpl implements IdCodeService {
      * @param failed
      * @param reason
      */
-    private Validation createValidation(String idCode, boolean failed, String reason) {
+    public Validation createValidation(String idCode, boolean failed, String reason) throws Exception {
+        if (idCode == null || reason == null) {
+            throw new Exception("Method arguments cannot be null"); //Todo. Maybe add custom exception.
+        }
+
         var validation = new Validation();
         validation.setIdCode(idCode);
         validation.setTimeStamp(LocalDateTime.now());
