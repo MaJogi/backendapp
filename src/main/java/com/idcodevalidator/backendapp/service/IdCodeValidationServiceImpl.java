@@ -1,6 +1,6 @@
 package com.idcodevalidator.backendapp.service;
 
-import com.idcodevalidator.backendapp.Constants;
+import com.idcodevalidator.backendapp.constant.Constants;
 import com.idcodevalidator.backendapp.entity.ValidationResult;
 import com.idcodevalidator.backendapp.repository.ValidationResultRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class IdCodeValidationServiceImpl implements IdCodeService {
+public class IdCodeValidationServiceImpl implements IdCodeValidationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IdCodeValidationServiceImpl.class);
 

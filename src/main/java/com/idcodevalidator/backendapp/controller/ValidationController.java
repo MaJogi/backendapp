@@ -2,7 +2,7 @@ package com.idcodevalidator.backendapp.controller;
 
 import com.idcodevalidator.backendapp.entity.ValidationResult;
 import com.idcodevalidator.backendapp.repository.ValidationResultRepository;
-import com.idcodevalidator.backendapp.service.IdCodeService;
+import com.idcodevalidator.backendapp.service.IdCodeValidationService;
 import com.idcodevalidator.backendapp.util.payload.request.ValidationRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,9 +20,9 @@ import java.util.List;
 public class ValidationController {
     private final ValidationResultRepository validationResultRepository;
 
-    private final IdCodeService service;
+    private final IdCodeValidationService service;
 
-    @GetMapping("validations")
+    @GetMapping("validations") //Fixme. Controller shouldn't directly access repository.
     public List<ValidationResult> getValidations() {
         return this.validationResultRepository.findAll();
     }

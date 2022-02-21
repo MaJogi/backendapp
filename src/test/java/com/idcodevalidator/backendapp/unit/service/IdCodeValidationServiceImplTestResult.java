@@ -1,7 +1,7 @@
 package com.idcodevalidator.backendapp.unit.service;
 
-import com.idcodevalidator.backendapp.Constants;
-import com.idcodevalidator.backendapp.service.IdCodeService;
+import com.idcodevalidator.backendapp.constant.Constants;
+import com.idcodevalidator.backendapp.service.IdCodeValidationService;
 import com.idcodevalidator.backendapp.unit.UnitTestBase;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class IdCodeValidationServiceImplTestResult extends UnitTestBase {
 
     @Autowired
-    IdCodeService service;
+    IdCodeValidationService service;
 
     @Test
     void processIdCodeIncorrectIdCodeLength() throws Exception {

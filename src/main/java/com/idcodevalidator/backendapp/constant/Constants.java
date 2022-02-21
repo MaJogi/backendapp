@@ -1,4 +1,4 @@
-package com.idcodevalidator.backendapp;
+package com.idcodevalidator.backendapp.constant;
 
 /**
  * Application specific constants that can be used anywhere.
