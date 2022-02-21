@@ -52,34 +52,15 @@ class IdCodeValidationServiceImplTest extends UnitTestBase {
         List<String> incorrectMonths = new ArrayList<>();
 
         // Creating test data
-        for (int i = 1; i <= 12; i++) {
-            if (i < 10) {
-                correctMonths.add(firstPart + "0" + i + lastPart);
-            } else {
-                correctMonths.add(firstPart + i + lastPart);
-            }
-        }
-        for (int i = 13; i <= 99; i++) {
-            incorrectMonths.add(firstPart + i + lastPart);
-        }
+        createCorrectTestData(correctMonths, firstPart, lastPart, 12);
+        createIncorrectTestData(incorrectMonths, firstPart, lastPart, 13, 99);
 
         // Actually testing with previously created test data
-        for (String id : correctMonths) {
-            var controlNumber = service.calculateControlNumber(id);
-            assertEquals(Constants.CORRECT_ID,
-                    service.processIdCode(id + controlNumber)
-                            .getVerdict());
-        }
-        for (String id : incorrectMonths) {
-            var controlNumber = service.calculateControlNumber(id);
-            assertEquals(Constants.ErrorDescription.INCORRECT_BIRTH_MONTH,
-                    service.processIdCode(id + controlNumber)
-                            .getVerdict());
-        }
+        assertIdCodesWithVerdict(correctMonths, Constants.CORRECT_ID);
+        assertIdCodesWithVerdict(incorrectMonths, Constants.ErrorDescription.INCORRECT_BIRTH_MONTH);
     }
 
     @Test
-        // Fixme: Duplication
     void processIdCodeIncorrectBirthDay() throws Exception {
         // String example = "39805 22 5211";
         String firstPart = "39805";
@@ -88,27 +69,36 @@ class IdCodeValidationServiceImplTest extends UnitTestBase {
         List<String> incorrectDays = new ArrayList<>();
 
         // Creating test data
-        for (int i = 1; i <= 31; i++) {
-            if (i < 10) {
-                correctDays.add(firstPart + "0" + i + lastPart);
-            } else {
-                correctDays.add(firstPart + i + lastPart);
-            }
-        }
-        for (int i = 32; i <= 99; i++) {
-            incorrectDays.add(firstPart + i + lastPart);
-        }
+        createCorrectTestData(correctDays, firstPart, lastPart, 31);
+        createIncorrectTestData(incorrectDays, firstPart, lastPart, 32, 99);
 
         // Actually testing with previously created test data
-        for (String id : correctDays) {
-            var controlNumber = service.calculateControlNumber(id);
-            assertEquals(Constants.CORRECT_ID,
-                    service.processIdCode(id + controlNumber)
-                            .getVerdict());
+        assertIdCodesWithVerdict(correctDays, Constants.CORRECT_ID);
+        assertIdCodesWithVerdict(incorrectDays, Constants.ErrorDescription.INCORRECT_BIRTH_DAY);
+    }
+
+    private void createCorrectTestData(List<String> correctIdList, String firstPart,
+                                       String lastPart, int amountOfCorrectIdsTo) {
+        for (int i = 1; i <= amountOfCorrectIdsTo; i++) {
+            if (i < 10) {
+                correctIdList.add(firstPart + "0" + i + lastPart);
+            } else {
+                correctIdList.add(firstPart + i + lastPart);
+            }
         }
-        for (String id : incorrectDays) {
+    }
+
+    private void createIncorrectTestData(List<String> incorrectIdList, String firstPart,
+                                         String lastPart, int amountOfIncorrectIdsFrom, int amountOfIncorrectIdsTo) {
+        for (int i = amountOfIncorrectIdsFrom; i <= amountOfIncorrectIdsTo; i++) {
+            incorrectIdList.add(firstPart + i + lastPart);
+        }
+    }
+
+    private void assertIdCodesWithVerdict(List<String> listOfIds, String verdictCheck) throws Exception {
+        for (String id : listOfIds) {
             var controlNumber = service.calculateControlNumber(id);
-            assertEquals(Constants.ErrorDescription.INCORRECT_BIRTH_DAY,
+            assertEquals(verdictCheck,
                     service.processIdCode(id + controlNumber)
                             .getVerdict());
         }
