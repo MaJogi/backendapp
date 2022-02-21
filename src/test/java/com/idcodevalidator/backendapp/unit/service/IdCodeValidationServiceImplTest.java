@@ -14,7 +14,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class IdCodeValidationServiceImplTestResult extends UnitTestBase {
+class IdCodeValidationServiceImplTest extends UnitTestBase {
 
     @Autowired
     IdCodeValidationService service;
@@ -79,6 +79,75 @@ class IdCodeValidationServiceImplTestResult extends UnitTestBase {
     }
 
     @Test
+        // Fixme: Duplication
+    void processIdCodeIncorrectBirthDay() throws Exception {
+        // String example = "39805 22 5211";
+        String firstPart = "39805";
+        String lastPart = "521";
+        List<String> correctDays = new ArrayList<>();
+        List<String> incorrectDays = new ArrayList<>();
+
+        // Creating test data
+        for (int i = 1; i <= 31; i++) {
+            if (i < 10) {
+                correctDays.add(firstPart + "0" + i + lastPart);
+            } else {
+                correctDays.add(firstPart + i + lastPart);
+            }
+        }
+        for (int i = 32; i <= 99; i++) {
+            incorrectDays.add(firstPart + i + lastPart);
+        }
+
+        // Actually testing with previously created test data
+        for (String id : correctDays) {
+            var controlNumber = service.calculateControlNumber(id);
+            assertEquals(Constants.CORRECT_ID,
+                    service.processIdCode(id + controlNumber)
+                            .getVerdict());
+        }
+        for (String id : incorrectDays) {
+            var controlNumber = service.calculateControlNumber(id);
+            assertEquals(Constants.ErrorDescription.INCORRECT_BIRTH_DAY,
+                    service.processIdCode(id + controlNumber)
+                            .getVerdict());
+        }
+    }
+
+    @Test
+    void processIdCodeIncorrectBirthOrder() throws Exception {
+        // String example = "3980522 521 1";
+        String firstPart = "3980522";
+        String lastPart = "";
+        List<String> correctDays = new ArrayList<>();
+
+        // Creating test data
+        for (int i = 1; i <= 999; i++) {
+            if (i < 10) {
+                correctDays.add(firstPart + "00" + i + lastPart);
+            } else if (i < 100) {
+                correctDays.add(firstPart + "0" + i + lastPart);
+            } else {
+                correctDays.add(firstPart + i + lastPart);
+            }
+        }
+        // Actually testing with previously created test data
+        // 001 up to 999
+        for (String id : correctDays) {
+            var controlNumber = service.calculateControlNumber(id);
+            assertEquals(Constants.CORRECT_ID,
+                    service.processIdCode(id + controlNumber)
+                            .getVerdict());
+        }
+        // 000
+        var controlNumber = service.calculateControlNumber(firstPart + "000");
+        assertEquals(Constants.ErrorDescription.INCORRECT_BIRTH_ORDER,
+                service.processIdCode(firstPart + "000" + controlNumber)
+                        .getVerdict());
+    }
+
+
+    @Test
     void processIdCodeCorrectCode() throws Exception {
         List<String> correctIds = Arrays.asList("39805225211", "37012222214", "37605030299"); // Fixme: Add more.
         for (String id : correctIds) {
@@ -90,7 +159,7 @@ class IdCodeValidationServiceImplTestResult extends UnitTestBase {
     void calculateControlNumber() {
         List<String> correctIds = Arrays.asList("39805225211", "37012222214", "37605030299");
         for (String id : correctIds) {
-            assertEquals(Character.toString(id.charAt(id.length()-1)),
+            assertEquals(Character.toString(id.charAt(id.length() - 1)),
                     String.valueOf(service.calculateControlNumber(id)));
         }
     }
