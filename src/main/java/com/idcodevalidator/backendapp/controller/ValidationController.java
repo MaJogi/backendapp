@@ -33,6 +33,7 @@ public class ValidationController {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         ValidationResult result = service.processIdCode(processRequest.getIdCode());
+        service.persistValidation(result);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

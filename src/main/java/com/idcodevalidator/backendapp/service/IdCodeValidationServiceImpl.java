@@ -71,7 +71,6 @@ public class IdCodeValidationServiceImpl implements IdCodeValidationService {
             // If everything OK
             validationResult = createValidation(idCode, false, Constants.CORRECT_ID);
         }
-        persistValidation(validationResult);
 
         return validationResult;
     }
@@ -102,7 +101,7 @@ public class IdCodeValidationServiceImpl implements IdCodeValidationService {
      *
      * @param validationResult Validation object which would be added to database.
      */
-    private void persistValidation(ValidationResult validationResult) {
+    public void persistValidation(ValidationResult validationResult) {
         repository.save(validationResult);
     }
 
