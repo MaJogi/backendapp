@@ -12,6 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller class to handle ID code validations in this application.
+ */
 @RestController
 @RequestMapping("api/")
 public class ValidationController {
@@ -27,8 +30,11 @@ public class ValidationController {
     }
 
     @PostMapping(value = "processIdCode", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<String> onIdSubmit(@RequestBody final ValidationRequest processRequest) throws Exception {
+    public ResponseEntity<Validation> onIdSubmit(@RequestBody final ValidationRequest processRequest) throws Exception {
+        if (processRequest == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         Validation result = service.processIdCode(processRequest.getIdCode());
-        return new ResponseEntity<>(result.getVerdict(), HttpStatus.OK);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

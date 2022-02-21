@@ -9,9 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Implementation class for checking validity of Estonian IDs.
+ */
 @Service
 public class IdCodeServiceImpl implements IdCodeService {
 
@@ -21,8 +25,11 @@ public class IdCodeServiceImpl implements IdCodeService {
     ValidationRepository repository;
 
     /**
-     * @param idCode
-     * @return
+     * Main method, which checks validity of Estonian identity code by checking
+     * specific digits on specific location.
+     *
+     * @param idCode Estonian identity code.
+     * @return Processed Validation that is already added to database.
      */
     @Override
     public Validation processIdCode(String idCode) throws Exception {
@@ -70,9 +77,11 @@ public class IdCodeServiceImpl implements IdCodeService {
     }
 
     /**
-     * @param idCode
-     * @param failed
-     * @param reason
+     * Method creates Validation object, which will be saved to database later on.
+     *
+     * @param idCode Estonian identity code.
+     * @param failed True, if ID code is incorrect.
+     * @param reason Exact written out reason for successful or unsuccessful validation.
      */
     public Validation createValidation(String idCode, boolean failed, String reason) throws Exception {
         if (idCode == null || reason == null) {
@@ -81,7 +90,7 @@ public class IdCodeServiceImpl implements IdCodeService {
 
         var validation = new Validation();
         validation.setIdCode(idCode);
-        validation.setTimeStamp(LocalDateTime.now());
+        validation.setTimeStamp(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         validation.setFailed(failed);
         validation.setVerdict(reason);
         return validation;
@@ -91,12 +100,17 @@ public class IdCodeServiceImpl implements IdCodeService {
      * For now, normal save operation doesn't need separate method, but perhaps more complex handling could be needed
      * in the future.
      *
-     * @param validation
+     * @param validation Validation object which would be added to database.
      */
     private void persistValidation(Validation validation) {
         repository.save(validation);
     }
 
+    /**
+     *
+     * @param idCode Estonian identity code
+     * @return Control number to be added at the end of the id code.
+     */
     public int calculateControlNumber(String idCode) {
         List<Integer> firstStageWeights = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 1);
         List<Integer> secondStageWeights = Arrays.asList(3, 4, 5, 6, 7, 8, 9, 1, 2, 3);
@@ -109,6 +123,7 @@ public class IdCodeServiceImpl implements IdCodeService {
         }
 
         int result = sum % 11;
+
         // if sum is < 10, we found missing number
         if (result < 10) {
             LOGGER.debug("First round control number: " + result);
