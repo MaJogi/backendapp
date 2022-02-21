@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Setter
 @Entity
 @Table(name = "validations")
-public class Validation {
+public class ValidationResult {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -31,11 +31,11 @@ public class Validation {
     private boolean failed;
     private String verdict;
 
-    public Validation() {
+    public ValidationResult() {
     }
 
-    public Validation(LocalDateTime timeStamp, String idCode,
-                      boolean failed, String verdict) {
+    public ValidationResult(LocalDateTime timeStamp, String idCode,
+                            boolean failed, String verdict) {
         this.timeStamp = timeStamp;
         this.idCode = idCode;
         this.failed = failed;

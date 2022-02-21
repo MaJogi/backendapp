@@ -1,8 +1,7 @@
 package com.idcodevalidator.backendapp.controller;
 
-import com.idcodevalidator.backendapp.entity.Validation;
-import com.idcodevalidator.backendapp.exception.*;
-import com.idcodevalidator.backendapp.repository.ValidationRepository;
+import com.idcodevalidator.backendapp.entity.ValidationResult;
+import com.idcodevalidator.backendapp.repository.ValidationResultRepository;
 import com.idcodevalidator.backendapp.service.IdCodeService;
 import com.idcodevalidator.backendapp.util.payload.request.ValidationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,22 +18,22 @@ import java.util.List;
 @RequestMapping("api/")
 public class ValidationController {
     @Autowired
-    private ValidationRepository validationRepository;
+    private ValidationResultRepository validationResultRepository;
 
     @Autowired
     IdCodeService service;
 
     @GetMapping("validations")
-    public List<Validation> getValidations() {
-        return this.validationRepository.findAll();
+    public List<ValidationResult> getValidations() {
+        return this.validationResultRepository.findAll();
     }
 
     @PostMapping(value = "processIdCode", produces = "application/json", consumes = "application/json")
-    public ResponseEntity<Validation> onIdSubmit(@RequestBody final ValidationRequest processRequest) throws Exception {
+    public ResponseEntity<ValidationResult> onIdSubmit(@RequestBody final ValidationRequest processRequest) throws Exception {
         if (processRequest == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        Validation result = service.processIdCode(processRequest.getIdCode());
+        ValidationResult result = service.processIdCode(processRequest.getIdCode());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 }

@@ -16,16 +16,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestInstance(TestInstance.Lifecycle.PER_CLASS) //fixme
-class IdCodeServiceImplTest extends UnitTestBase {
+class IdCodeValidationServiceImplTestResult extends UnitTestBase {
 
     @Autowired
     IdCodeService service;
-
-    @BeforeAll
-    void init() {
-        assertNotNull(service);
-    }
 
     // Todo: EE_PROJECT-2: Create random generated values to test right day, month and year.
 

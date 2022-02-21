@@ -1,8 +1,8 @@
 package com.idcodevalidator.backendapp.service;
 
 import com.idcodevalidator.backendapp.Constants;
-import com.idcodevalidator.backendapp.entity.Validation;
-import com.idcodevalidator.backendapp.repository.ValidationRepository;
+import com.idcodevalidator.backendapp.entity.ValidationResult;
+import com.idcodevalidator.backendapp.repository.ValidationResultRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +17,12 @@ import java.util.List;
  * Implementation class for checking validity of Estonian IDs.
  */
 @Service
-public class IdCodeServiceImpl implements IdCodeService {
+public class IdCodeValidationServiceImpl implements IdCodeService {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(IdCodeServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(IdCodeValidationServiceImpl.class);
 
     @Autowired
-    ValidationRepository repository;
+    ValidationResultRepository repository;
 
     /**
      * Main method, which checks validity of Estonian identity code by checking
@@ -32,7 +32,7 @@ public class IdCodeServiceImpl implements IdCodeService {
      * @return Processed Validation that is already added to database.
      */
     @Override
-    public Validation processIdCode(String idCode) throws Exception {
+    public ValidationResult processIdCode(String idCode) throws Exception {
 
         /* Of course there is a chance that some day and month pair don't exist. Like days 29-31 in February.
            But I won't overcomplicate solution by trying to convert parts of ID code to date object. In real
@@ -42,38 +42,38 @@ public class IdCodeServiceImpl implements IdCodeService {
 
         LOGGER.debug("Starting processing ID code");
 
-        Validation validation;
+        ValidationResult validationResult;
 
         /* Note: Length is already checked by frontend but there is still a chance that form can be manipulated
            to bypass minLength property. Backend check might still be useful */
         if (idCode.length() != Constants.ID_CODE_LENGTH) {
-            validation = createValidation(idCode, true,
+            validationResult = createValidation(idCode, true,
                     Constants.ErrorDescription.INCORRECT_CODE_LENGTH);
         } else if (!idCode.matches(Constants.RegularExpr.ONLY_DIGITS)) {
-            validation = createValidation(idCode, true,
+            validationResult = createValidation(idCode, true,
                     Constants.ErrorDescription.ONLY_DIGITS_ALLOWED);
         } else if (!idCode.substring(0, 1).matches(Constants.RegularExpr.ONLY_ONE_TO_SIX)) {
-            validation = createValidation(idCode, true,
+            validationResult = createValidation(idCode, true,
                     Constants.ErrorDescription.INCORRECT_GENDER_IDENTIFIER);
         } else if (!idCode.substring(3, 5).matches(Constants.RegularExpr.BIRTH_MONTH_DIGITS_ONLY)) {
-            validation = createValidation(idCode, true,
+            validationResult = createValidation(idCode, true,
                     Constants.ErrorDescription.INCORRECT_BIRTH_MONTH);
         } else if (!idCode.substring(5, 7).matches(Constants.RegularExpr.BIRTH_DAY_DIGITS_ONLY)) {
-            validation = createValidation(idCode, true,
+            validationResult = createValidation(idCode, true,
                     Constants.ErrorDescription.INCORRECT_BIRTH_DAY);
         } else if (!idCode.substring(7, 10).matches(Constants.RegularExpr.FIRST_UP_TO_THOUSAND)) {
-            validation = createValidation(idCode,
+            validationResult = createValidation(idCode,
                     true, Constants.ErrorDescription.INCORRECT_BIRTH_ORDER);
         } else if (!(Integer.parseInt(idCode.substring(10, 11)) == (calculateControlNumber(idCode)))) {
-            validation = createValidation(idCode, true,
+            validationResult = createValidation(idCode, true,
                     Constants.ErrorDescription.INCORRECT_CONTROL_NUMBER);
         } else {
             // If everything OK
-            validation = createValidation(idCode, false, Constants.CORRECT_ID);
+            validationResult = createValidation(idCode, false, Constants.CORRECT_ID);
         }
-        persistValidation(validation);
+        persistValidation(validationResult);
 
-        return validation;
+        return validationResult;
     }
 
     /**
@@ -83,12 +83,12 @@ public class IdCodeServiceImpl implements IdCodeService {
      * @param failed True, if ID code is incorrect.
      * @param reason Exact written out reason for successful or unsuccessful validation.
      */
-    public Validation createValidation(String idCode, boolean failed, String reason) throws Exception {
+    public ValidationResult createValidation(String idCode, boolean failed, String reason) throws Exception {
         if (idCode == null || reason == null) {
             throw new Exception("Method arguments cannot be null"); //Todo. Maybe add custom exception.
         }
 
-        var validation = new Validation();
+        var validation = new ValidationResult();
         validation.setIdCode(idCode);
         validation.setTimeStamp(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         validation.setFailed(failed);
@@ -100,10 +100,10 @@ public class IdCodeServiceImpl implements IdCodeService {
      * For now, normal save operation doesn't need separate method, but perhaps more complex handling could be needed
      * in the future.
      *
-     * @param validation Validation object which would be added to database.
+     * @param validationResult Validation object which would be added to database.
      */
-    private void persistValidation(Validation validation) {
-        repository.save(validation);
+    private void persistValidation(ValidationResult validationResult) {
+        repository.save(validationResult);
     }
 
     /**
