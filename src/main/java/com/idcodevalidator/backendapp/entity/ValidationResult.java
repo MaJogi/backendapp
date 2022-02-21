@@ -25,7 +25,7 @@ public class ValidationResult {
     @Column(name = "time")
     // @JsonFormat(pattern="yyyy-MM-dd HH:mm")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm")
-    private LocalDateTime timeStamp; //Fixme: think about time format
+    private LocalDateTime timeStamp;
     @Column(name = "id_code")
     private String idCode;
     private boolean failed;

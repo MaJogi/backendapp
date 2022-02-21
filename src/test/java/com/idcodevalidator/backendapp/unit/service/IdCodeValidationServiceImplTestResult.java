@@ -3,9 +3,7 @@ package com.idcodevalidator.backendapp.unit.service;
 import com.idcodevalidator.backendapp.Constants;
 import com.idcodevalidator.backendapp.service.IdCodeService;
 import com.idcodevalidator.backendapp.unit.UnitTestBase;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
@@ -20,8 +18,6 @@ class IdCodeValidationServiceImplTestResult extends UnitTestBase {
 
     @Autowired
     IdCodeService service;
-
-    // Todo: EE_PROJECT-2: Create random generated values to test right day, month and year.
 
     @Test
     void processIdCodeIncorrectIdCodeLength() throws Exception {

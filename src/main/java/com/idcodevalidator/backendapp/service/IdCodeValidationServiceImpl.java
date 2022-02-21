@@ -3,9 +3,9 @@ package com.idcodevalidator.backendapp.service;
 import com.idcodevalidator.backendapp.Constants;
 import com.idcodevalidator.backendapp.entity.ValidationResult;
 import com.idcodevalidator.backendapp.repository.ValidationResultRepository;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,12 +17,12 @@ import java.util.List;
  * Implementation class for checking validity of Estonian IDs.
  */
 @Service
+@RequiredArgsConstructor
 public class IdCodeValidationServiceImpl implements IdCodeService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IdCodeValidationServiceImpl.class);
 
-    @Autowired
-    ValidationResultRepository repository;
+    private final ValidationResultRepository repository;
 
     /**
      * Main method, which checks validity of Estonian identity code by checking
