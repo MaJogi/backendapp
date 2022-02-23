@@ -22,7 +22,7 @@ public class IdCodeValidationServiceImpl implements IdCodeValidationService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IdCodeValidationServiceImpl.class);
 
-    private final ValidationResultRepository repository;
+    private final ValidationResultRepository validationResultRepository;
 
     /**
      * Main method, which checks validity of Estonian identity code by checking
@@ -102,7 +102,7 @@ public class IdCodeValidationServiceImpl implements IdCodeValidationService {
      * @param validationResult Validation object which would be added to database.
      */
     public void persistValidation(ValidationResult validationResult) {
-        repository.save(validationResult);
+        validationResultRepository.save(validationResult);
     }
 
     /**
@@ -139,5 +139,9 @@ public class IdCodeValidationServiceImpl implements IdCodeValidationService {
         }
 
         return result;
+    }
+
+    public List<ValidationResult> getValidations() {
+        return this.validationResultRepository.findAll();
     }
 }

@@ -15,19 +15,19 @@ import java.util.List;
  * Controller class to handle ID code validations in this application.
  */
 @RestController
-@RequestMapping("api/")
+@RequestMapping("validation")
 @RequiredArgsConstructor
 public class ValidationController {
     private final ValidationResultRepository validationResultRepository;
 
     private final IdCodeValidationService service;
 
-    @GetMapping("validations") //Fixme. Controller shouldn't directly access repository.
+    @GetMapping()
     public List<ValidationResult> getValidations() {
-        return this.validationResultRepository.findAll();
+        return service.getValidations();
     }
 
-    @PostMapping(value = "processIdCode", produces = "application/json", consumes = "application/json")
+    @PostMapping(value = "processIdCode"/*, produces = "application/json", consumes = "application/json"*/)
     public ResponseEntity<ValidationResult> onIdSubmit(@RequestBody final ValidationRequest processRequest) throws Exception {
         if (processRequest == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
